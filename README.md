@@ -1,1 +1,1 @@
-# Gundam-Kit-Tracker-
+# Gundam-Kit-Tracker
