@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gundam Kit Tracker — Preview</title>
+  <style>
+    :root {
+      --bg-primary: #0f1117;
+      --bg-secondary: #1a1d2e;
+      --bg-card: #222640;
+      --accent: #e63946;
+      --accent-hover: #ff4d5a;
+      --text-primary: #edf2f4;
+      --text-secondary: #8d99ae;
+      --border: #2a2f45;
+      --success: #2ec4b6;
+      --warning: #e9c46a;
+      --info: #457b9d;
+      --grade-hg: #3a86ff;
+      --grade-rg: #8338ec;
+      --grade-mg: #ff006e;
+      --grade-pg: #fb5607;
+      --grade-sd: #2ec4b6;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+
+    /* Header / Nav */
+    .navbar {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .navbar .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+
+    .navbar .logo svg {
+      width: 32px;
+      height: 32px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--text-primary);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--text-secondary);
+      color: var(--text-primary);
+    }
+
+    /* Layout */
+    .main-layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      min-height: calc(100vh - 57px);
+    }
+
+    /* Sidebar */
+    .sidebar {
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border);
+      padding: 1.5rem 1rem;
+    }
+
+    .sidebar-section {
+      margin-bottom: 2rem;
+    }
+
+    .sidebar-section h3 {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-secondary);
+      margin-bottom: 0.75rem;
+      padding-left: 0.5rem;
+    }
+
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: 6px;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .sidebar-item:hover {
+      background: var(--bg-card);
+      color: var(--text-primary);
+    }
+
+    .sidebar-item.active {
+      background: var(--accent);
+      color: white;
+    }
+
+    .sidebar-item .count {
+      margin-left: auto;
+      background: var(--bg-primary);
+      padding: 0.1rem 0.5rem;
+      border-radius: 10px;
+      font-size: 0.75rem;
+    }
+
+    .sidebar-item.active .count {
+      background: rgba(0,0,0,0.3);
+    }
+
+    /* Content Area */
+    .content {
+      padding: 2rem;
+    }
+
+    .content-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .content-header h1 {
+      font-size: 1.5rem;
+    }
+
+    .content-header .toolbar {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .search-box {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.5rem 0.75rem;
+      color: var(--text-primary);
+      font-size: 0.85rem;
+      width: 240px;
+    }
+
+    .search-box::placeholder {
+      color: var(--text-secondary);
+    }
+
+    /* Stats Bar */
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+    }
+
+    .stat-card .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-card .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-top: 0.25rem;
+    }
+
+    .stat-card .stat-sub {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-top: 0.25rem;
+    }
+
+    /* Kit Grid */
+    .kit-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .kit-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      transition: transform 0.2s, border-color 0.2s;
+      cursor: pointer;
+    }
+
+    .kit-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent);
+    }
+
+    .kit-image {
+      width: 100%;
+      height: 200px;
+      background: var(--bg-card);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .kit-image .placeholder-icon {
+      font-size: 3rem;
+      opacity: 0.3;
+    }
+
+    .kit-image .grade-badge {
+      position: absolute;
+      top: 0.75rem;
+      left: 0.75rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: white;
+    }
+
+    .grade-hg { background: var(--grade-hg); }
+    .grade-rg { background: var(--grade-rg); }
+    .grade-mg { background: var(--grade-mg); }
+    .grade-pg { background: var(--grade-pg); }
+    .grade-sd { background: var(--grade-sd); }
+
+    .kit-image .status-badge {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+
+    .status-backlog { background: var(--border); color: var(--text-secondary); }
+    .status-building { background: var(--warning); color: #000; }
+    .status-built { background: var(--info); color: white; }
+    .status-painted { background: var(--accent); color: white; }
+    .status-displayed { background: var(--success); color: white; }
+
+    .kit-info {
+      padding: 1rem;
+    }
+
+    .kit-info h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .kit-info .kit-series {
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .kit-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    .kit-meta .scale {
+      background: var(--bg-primary);
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+    }
+
+    /* Progress Bar in Sidebar */
+    .progress-bar {
+      height: 4px;
+      background: var(--bg-primary);
+      border-radius: 2px;
+      margin: 0.5rem 0.75rem 0;
+      overflow: hidden;
+    }
+
+    .progress-bar .fill {
+      height: 100%;
+      border-radius: 2px;
+      background: var(--success);
+    }
+
+    .progress-label {
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+      padding: 0.25rem 0.75rem 0;
+    }
+
+    /* Preview Banner */
+    .preview-banner {
+      background: linear-gradient(135deg, var(--accent) 0%, #c1121f 100%);
+      text-align: center;
+      padding: 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+
+    /* Filter Pills */
+    .filter-pills {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      padding: 0.35rem 0.85rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s;
+      background: transparent;
+    }
+
+    .pill:hover {
+      border-color: var(--text-secondary);
+      color: var(--text-primary);
+    }
+
+    .pill.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .main-layout {
+        grid-template-columns: 1fr;
+      }
+      .sidebar {
+        display: none;
+      }
+      .stats-bar {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .kit-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="preview-banner">
+    PREVIEW — Gundam Kit Tracker UI Concept
+  </div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="#" class="logo">
+      <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="32" height="32" rx="6" fill="#e63946"/>
+        <path d="M8 24V12l8-6 8 6v12H8z" fill="white" opacity="0.9"/>
+        <path d="M14 24v-6h4v6" stroke="#e63946" stroke-width="1.5"/>
+        <circle cx="16" cy="14" r="2" fill="#e63946"/>
+      </svg>
+      Gundam Kit Tracker
+    </a>
+    <ul class="nav-links">
+      <li><a href="#" class="active">Collection</a></li>
+      <li><a href="#">Wishlist</a></li>
+      <li><a href="#">Statistics</a></li>
+      <li><a href="#">Timeline</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="btn btn-primary">+ Add Kit</button>
+    </div>
+  </nav>
+
+  <!-- Main Layout -->
+  <div class="main-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <h3>Build Status</h3>
+        <div class="sidebar-item active">
+          <span>All Kits</span>
+          <span class="count">47</span>
+        </div>
+        <div class="sidebar-item">
+          <span>Backlog</span>
+          <span class="count">12</span>
+        </div>
+        <div class="sidebar-item">
+          <span>In Progress</span>
+          <span class="count">3</span>
+        </div>
+        <div class="sidebar-item">
+          <span>Built</span>
+          <span class="count">18</span>
+        </div>
+        <div class="sidebar-item">
+          <span>Painted</span>
+          <span class="count">8</span>
+        </div>
+        <div class="sidebar-item">
+          <span>Displayed</span>
+          <span class="count">6</span>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>Grades</h3>
+        <div class="sidebar-item">
+          <span>High Grade (HG)</span>
+          <span class="count">20</span>
+        </div>
+        <div class="sidebar-item">
+          <span>Real Grade (RG)</span>
+          <span class="count">10</span>
+        </div>
+        <div class="sidebar-item">
+          <span>Master Grade (MG)</span>
+          <span class="count">12</span>
+        </div>
+        <div class="sidebar-item">
+          <span>Perfect Grade (PG)</span>
+          <span class="count">3</span>
+        </div>
+        <div class="sidebar-item">
+          <span>Super Deformed (SD)</span>
+          <span class="count">2</span>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>Build Progress</h3>
+        <div class="progress-bar"><div class="fill" style="width: 68%"></div></div>
+        <div class="progress-label">32 of 47 kits built (68%)</div>
+      </div>
+    </aside>
+
+    <!-- Content -->
+    <main class="content">
+      <div class="content-header">
+        <h1>My Collection</h1>
+        <div class="toolbar">
+          <input type="text" class="search-box" placeholder="Search kits..." />
+          <button class="btn btn-outline">Sort</button>
+          <button class="btn btn-outline">View</button>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-bar">
+        <div class="stat-card">
+          <div class="stat-label">Total Kits</div>
+          <div class="stat-value">47</div>
+          <div class="stat-sub">+3 this month</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Completed</div>
+          <div class="stat-value" style="color: var(--success)">32</div>
+          <div class="stat-sub">68% of collection</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">In Progress</div>
+          <div class="stat-value" style="color: var(--warning)">3</div>
+          <div class="stat-sub">Currently building</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Backlog</div>
+          <div class="stat-value" style="color: var(--text-secondary)">12</div>
+          <div class="stat-sub">Waiting to build</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Wishlist</div>
+          <div class="stat-value" style="color: var(--info)">8</div>
+          <div class="stat-sub">Want to buy</div>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="filter-pills">
+        <button class="pill active">All</button>
+        <button class="pill">HG</button>
+        <button class="pill">RG</button>
+        <button class="pill">MG</button>
+        <button class="pill">PG</button>
+        <button class="pill">SD</button>
+      </div>
+
+      <!-- Kit Grid -->
+      <div class="kit-grid">
+
+        <div class="kit-card">
+          <div class="kit-image">
+            <span class="placeholder-icon">&#9881;</span>
+            <span class="grade-badge grade-pg">PG</span>
+            <span class="status-badge status-displayed">Displayed</span>
+          </div>
+          <div class="kit-info">
+            <h3>PG Unicorn Gundam</h3>
+            <div class="kit-series">Mobile Suit Gundam Unicorn</div>
+            <div class="kit-meta">
+              <span>Bandai &middot; 2014</span>
+              <span class="scale">1/60</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="kit-card">
+          <div class="kit-image">
+            <span class="placeholder-icon">&#9881;</span>
+            <span class="grade-badge grade-mg">MG</span>
+            <span class="status-badge status-painted">Painted</span>
+          </div>
+          <div class="kit-info">
+            <h3>MG Freedom Gundam 2.0</h3>
+            <div class="kit-series">Gundam SEED</div>
+            <div class="kit-meta">
+              <span>Bandai &middot; 2016</span>
+              <span class="scale">1/100</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="kit-card">
+          <div class="kit-image">
+            <span class="placeholder-icon">&#9881;</span>
+            <span class="grade-badge grade-rg">RG</span>
+            <span class="status-badge status-building">Building</span>
+          </div>
+          <div class="kit-info">
+            <h3>RG Nu Gundam</h3>
+            <div class="kit-series">Char's Counterattack</div>
+            <div class="kit-meta">
+              <span>Bandai &middot; 2019</span>
+              <span class="scale">1/144</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="kit-card">
+          <div class="kit-image">
+            <span class="placeholder-icon">&#9881;</span>
+            <span class="grade-badge grade-mg">MG</span>
+            <span class="status-badge status-built">Built</span>
+          </div>
+          <div class="kit-info">
+            <h3>MG Barbatos</h3>
+            <div class="kit-series">Iron-Blooded Orphans</div>
+            <div class="kit-meta">
+              <span>Bandai &middot; 2019</span>
+              <span class="scale">1/100</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="kit-card">
+          <div class="kit-image">
+            <span class="placeholder-icon">&#9881;</span>
+            <span class="grade-badge grade-hg">HG</span>
+            <span class="status-badge status-displayed">Displayed</span>
+          </div>
+          <div class="kit-info">
+            <h3>HG Aerial</h3>
+            <div class="kit-series">The Witch from Mercury</div>
+            <div class="kit-meta">
+              <span>Bandai &middot; 2022</span>
+              <span class="scale">1/144</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="kit-card">
+          <div class="kit-image">
+            <span class="placeholder-icon">&#9881;</span>
+            <span class="grade-badge grade-rg">RG</span>
+            <span class="status-badge status-built">Built</span>
+          </div>
+          <div class="kit-info">
+            <h3>RG Wing Gundam Zero EW</h3>
+            <div class="kit-series">Gundam Wing: Endless Waltz</div>
+            <div class="kit-meta">
+              <span>Bandai &middot; 2014</span>
+              <span class="scale">1/144</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="kit-card">
+          <div class="kit-image">
+            <span class="placeholder-icon">&#9881;</span>
+            <span class="grade-badge grade-hg">HG</span>
+            <span class="status-badge status-backlog">Backlog</span>
+          </div>
+          <div class="kit-info">
+            <h3>HG Calibarn</h3>
+            <div class="kit-series">The Witch from Mercury</div>
+            <div class="kit-meta">
+              <span>Bandai &middot; 2023</span>
+              <span class="scale">1/144</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="kit-card">
+          <div class="kit-image">
+            <span class="placeholder-icon">&#9881;</span>
+            <span class="grade-badge grade-mg">MG</span>
+            <span class="status-badge status-backlog">Backlog</span>
+          </div>
+          <div class="kit-info">
+            <h3>MG Exia</h3>
+            <div class="kit-series">Gundam 00</div>
+            <div class="kit-meta">
+              <span>Bandai &middot; 2009</span>
+              <span class="scale">1/100</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+</body>
+</html>
